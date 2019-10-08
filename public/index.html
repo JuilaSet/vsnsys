@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>VSN test</title>        
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+        <script src="./socket.io/socket.io.js"></script>
+        <script src="./js/libs/jquery-1.12.0.min.js"></script>
+        <script src="./js/libs/auto-line-number.js"></script>
+        <script src="./js/libs/File.js"></script>
+        <script src="js/index.js"></script>
+        <style>
+        #command {
+            width: 100%;
+	float: left;
+            background-color: #EAEAEA;
+            border:none;
+            height: 300px;
+            padding: 5px;
+            line-height: 23px;
+            overflow: auto;
+            font-size: 16px;
+            font-family: "微软雅黑"
+        }
+        .text {
+            float: left;
+            box-shadow: 0 0 1px 1px #3e4ef9;
+            width: 35%;
+            border:none;
+            padding: 5px;
+            line-height: 23px;
+            overflow: auto;
+            color: #666;
+        }
+        .console {
+            box-shadow: 0 0 1px 1px #3e4ef9;
+            width: 60%;
+            border:none;
+            padding: 5px;
+            line-height: 23px;
+            overflow: auto;
+            background-color: #3e4ef9;
+            color: #EEF;
+        }
+        .holder {
+            float: left;
+            width: 100%;
+        }
+        #command:focus {
+            box-shadow: 0 0 1px 1px #3e4ef9;
+        }
+        </style>
+    </head>
+    <body>
+            <div>        
+                <button id="sendBtn">运行</button>
+                <button id="clear">清空</button>
+                <button id="download">下载</button>
+                <button id="leaveBtn">离开</button>
+            </div>
+
+            <div>
+                <textarea type="text" id="command"
+># console: hello vsn;
+</textarea>
+            </div>
+
+            <div class="holder">
+                <textarea cols="30" rows="10" id="myconsole" readonly="readonly" class="console">控制台: </textarea>
+                <textarea cols="30" rows="10" id="resultWindow" readonly="readonly" class="text">结果: </textarea>
+            </div>
+    </body>
+</html>
