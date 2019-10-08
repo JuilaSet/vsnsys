@@ -1,5 +1,5 @@
 window.onload = function(){
-    let socket = io.connect('49.234.66.103:8081'),	//与服务器进行连接
+    let socket = io.connect('49.234.66.103:8080'),	//与服务器进行连接
     send = document.getElementById('sendBtn'),
     leave = document.getElementById('leaveBtn'),
     command = document.getElementById('command'),
@@ -50,7 +50,10 @@ window.onload = function(){
 
     // 显示结果
     resultWindow.log = function (data){
-        resultWindow.value = "结果: \n" + data;
+        resultWindow.value += data + "\n";
+    }
+    resultWindow.clear = function(){
+        resultWindow.value = "结果; \n";
     }
 
     myconsole.log = function (data){
@@ -104,12 +107,19 @@ window.onload = function(){
     });
 
     socket.on('cConsole', function(msg){
-        console.log("cConsole");
-        myconsole.log(msg.msg);
+        if(msg.ok){
+            myconsole.log(msg.msg);
+        }else{
+            myconsole.log(errorHander(msg.obj, command.value, msg.errorType));
+        }
     })
 
     socket.on('clearConsole', function(){
         myconsole.clear();
+    })
+
+    socket.on('clearResult', function(){
+        resultWindow.clear();
     })
 
     socket.on('disconnect', function(){

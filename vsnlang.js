@@ -57,15 +57,27 @@ class Vsn {
 	constructor(option){
 		this.socket = getData(option.socket, null);
 		this.UUID = getData(option.UUID, "0");
+		this.db = getData(option.db, null);
 		this.treeRoot = new Tree("_root_", undefined);
+		this.resultList = [];
 	}
 
 	_init(){
 		// skip
+		this.resultList = [];
 	}
 
 	_addRootNode(node){
 		this.treeRoot.addSubNode(node);
+	}
+
+	_flushResult(){
+		let socket = this.socket;
+		if(socket){
+			for(let r of this.resultList){
+				socket.emit('cResult', r);
+			}
+		}
 	}
 
 	getNode(key){
@@ -119,7 +131,7 @@ class Vsn {
 
 	console(args){
 		let socket = this.socket;
-		if(this.socket){
+		if(socket){
 			return createVsnFunction(function(args){
 				socket.emit('cConsole', new ResponseMessage({
 					ok : true,
@@ -129,7 +141,75 @@ class Vsn {
 		}
 		return args;
 	}
+
+	result(args){
+		this.resultList.push(new ResponseMessage({
+			ok : true,
+			msg : args
+		}));
+		return args;
+	}
+
+	// 返回所有元素
+	showCollection(name){
+		let self = this;
+		if(name){
+			if(this.db){
+				try{
+					let db = this.db;
+					// 返回集合中所有数据
+					return db.collection(name).find({}).toArray(function(err, result) {
+						if(err) throw err;
+						console.log("用户: " + self.UUID, "查询集合: " + name, result);
+						self.console(["show collection: " + name + " res: " + result]);
+					});
+				}catch(e){
+					self.console(e);
+				}
+			}
+		}
+	}
+
+	// 创建集合
+	createCollection(name){
+		if(name){
+			if(this.db){
+				try{
+					let self = this;
+					return this.db.createCollection(name, function (err, res) {
+						if (err) throw err;
+						console.log("用户: " + self.UUID, "创建集合: " + name);
+						self.console("create collection: " + name);
+					});
+				}catch(e){
+					self.console(e);
+				}
+			}
+		}
+		console.log("用户: " + this.UUID, "创建集合失败");
+	}
 	
+	// 删除集合
+	dropCollection(name){
+		if(name){
+			if(this.db){
+				try{
+					let self = this;
+					return this.db.collection(name).drop(function(err, delOK) {
+						if (err) throw err;
+						if (delOK){
+							console.log("用户: " + self.UUID, "删除集合: " + name);
+							self.console("drop collection: " + name);
+						}
+					});
+				}catch(e){
+					self.console(e);
+				}
+			}
+		}
+		console.log("用户: " + this.UUID, "删除集合失败");
+	}
+
 	clear(){
 		if(this.socket){
 			this.socket.emit('clearConsole', null)
